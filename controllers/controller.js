@@ -1,3 +1,3 @@
 exports.helloWorld = (req, res, next) => {
-    res.send('<h1>Hello World!</h1>');
+    res.status(201).json({ message: "Hello World" })
   };
