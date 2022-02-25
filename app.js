@@ -9,7 +9,7 @@ const config = require('./dbConfig')
 //routes
 const router = require('./routes/router');
 const courseRouter = require('./routes/courses.router')
-const instructorRouter = require('./routes/instructorRouter')
+const instructorRouter = require('./routes/instructorsRouter')
 
 // connect to database then listing to server
 sql.connect(config)
