@@ -9,6 +9,8 @@ const config = require('./dbConfig')
 //routes
 const router = require('./routes/router');
 const courseRouter = require('./routes/courses.router')
+const instructorRouter = require('./routes/instructorRouter')
+
 // connect to database then listing to server
 sql.connect(config)
   .then(() => {
@@ -32,6 +34,7 @@ server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
 
 server.use('/courses',courseRouter);
+server.use('/instructors',instructorRouter);
 
 //unknown paths
 server.use((req, res, next) => {
