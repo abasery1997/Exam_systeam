@@ -1,5 +1,5 @@
 const config = {
-    user: 'fadwa',
+    user: 'admin',
     password: '654123',
     server: 'localhost', 
     database: 'ExamSystem',

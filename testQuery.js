@@ -1,4 +1,4 @@
-const config = require('./dbconfig')
+const config = require('./dbConfig')
 const sql = require('mssql')
 
 
@@ -10,16 +10,16 @@ async function getSt() {
             
         // stored procedure
         let result2 = await pool.request()
-            .input('courseID', sql.Int, value)
+            //.input('courseID', sql.Int, value)
             //.output('output_parameter', sql.VarChar(50))
-            .execute('getCourseInfo')
+            .execute('SelectAllCourse')
 
         //console.dir(result1.recordset);
         return result2.recordset;
 
     } catch (err) {
         // ... error checks
-        return new Error("failed to connect")
+        return new Error(err.toString());
     }
 }
 
