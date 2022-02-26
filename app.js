@@ -52,11 +52,10 @@ server.use('/generateExam',AuthRequired,generateExamRouter);
 
 //unknown paths
 server.use((req, res, next) => {
-  res.send(" unknown url paths");
-
+  res.status(404).json({ message:"Page Not Found"});
 });
 //error
 server.use((error, req, res, next) => {
-  res.send("Error: " + error);
+  res.status(500).json(error);
 
 })
