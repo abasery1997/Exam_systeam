@@ -25,7 +25,7 @@ exports.list = function (req, res, next) {
                                     Quest.Choices.push(Choice.Body);
                                 })
                                 if (index == questions.length - 1)
-                                    res.status(200).json({ message: "Questions data", questions });
+                                    res.status(200).json({ message: "Questions data",data: questions });
                             })
 
                     })
@@ -61,7 +61,7 @@ exports.courseQuestions = function (req, res, next) {
                                     Quest.Choices.push(Choice.Body);
                                 })
                                 if (index == questions.length - 1)
-                                    res.status(200).json({ message: "Questions data", questions });
+                                    res.status(200).json({ message: "Questions data", data: questions});
                             })
 
                     })
