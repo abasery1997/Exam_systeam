@@ -8,27 +8,29 @@ exports.list = function (req, res, next) {
         .then(result => {
             let questions = result.recordset;
             questions.forEach((Quest, index) => {
-                if (Quest.Correct_Answer == 0) {
-                    Quest.Correct_Answer = "False";
-                } else if (Quest.Correct_Answer == 1) {
-                    Quest.Correct_Answer = "True";
-                }
-                else {
-                    //Quest.Correct_Answer= "mcqq"
+               
                     new sql.Request()
                         .input('ansId', sql.Int, Quest.Correct_Answer)
                         .execute('GetCorrectAnswer')
                         .then(result => {
-                            console.log(result.recordset[0].Body);
                             choise = result.recordset[0].Body;
                             Quest.Correct_Answer = choise
-                        
+                            
+                            Quest= Object.assign(Quest, {'Choices': []});
+                            new sql.Request()
+                            .input('questionID', sql.Int, Quest.Ques_ID)
+                            .execute('getQuestionChoices')
+                            .then(result => {
+                                result.recordset.forEach(Choice => {
+                                    Quest.Choices.push(Choice.Body); 
+                                })
+                                if(index == questions.length-1)
+                                res.status(200).json({ message: "Questions data", questions });
+                            })
+                           
                         })
-                }
-               
             })
            
-            res.status(200).json({ message: "Questions data", questions });
         })
         .catch(error => {
             error.status = 500;
