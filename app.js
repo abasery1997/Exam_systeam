@@ -1,12 +1,17 @@
+require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql')
+const jwt = require('jsonwebtoken');
+
 const server = express();
 
 
 const config = require('./dbConfig')
+const {AuthRequired} = require('./middleware/auth/authRequired.middleware')
 
 //routes
+const authRouter = require('./routes/auth.router');
 const router = require('./routes/router');
 const courseRouter = require('./routes/courses.router')
 const instructorRouter = require('./routes/instructorsRouter')
@@ -35,12 +40,13 @@ server.use('/home', router);
 // parse application/json
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
-
-server.use('/courses',courseRouter);
-server.use('/instructors',instructorRouter);
-server.use('/questions',questionsRouter);
-server.use('/departments',deptRouter);
-server.use('/generateExam',generateExamRouter);
+server.use(express.json());
+server.use('/login',authRouter);
+server.use('/courses',AuthRequired,courseRouter);
+server.use('/instructors',AuthRequired,instructorRouter);
+server.use('/questions',AuthRequired,questionsRouter);
+server.use('/departments',AuthRequired,deptRouter);
+server.use('/generateExam',AuthRequired,generateExamRouter);
 
 
 
