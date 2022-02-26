@@ -12,6 +12,7 @@ const courseRouter = require('./routes/courses.router')
 const instructorRouter = require('./routes/instructorsRouter')
 const questionsRouter = require('./routes/questions.router')
 const deptRouter = require('./routes/departmentRoute')
+const generateExamRouter = require('./routes/generateExamRouter')
 
 // connect to database then listing to server
 sql.connect(config)
@@ -39,6 +40,9 @@ server.use('/courses',courseRouter);
 server.use('/instructors',instructorRouter);
 server.use('/questions',questionsRouter);
 server.use('/departments',deptRouter);
+server.use('/generateExam',generateExamRouter);
+
+
 
 //unknown paths
 server.use((req, res, next) => {
