@@ -17,7 +17,7 @@ exports.getInstructors = function(req, res, next){
                             })
                             // response
                             if(index == insCrsArr.length-1)
-                                res.status(200).json(insCrsArr);
+                                res.status(200).json({ message: "Instructors data", data: insCrsArr });
                         })
                         .catch(error => {
                             error.status = 500;
