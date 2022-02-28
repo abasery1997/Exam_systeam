@@ -1,5 +1,5 @@
 const sql = require('mssql')
-
+const {validationResult}=require("express-validator");
 
 
 //get all courses
@@ -17,7 +17,14 @@ exports.list = function (req, res, next) {
 //add a course and two topics
 
 exports.addCourse = function (req, res, next) {
-
+    let errors=   validationResult(req);
+    if(!errors.isEmpty())
+    {
+           let error=new Error();
+           error.status=422;
+           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
+           throw error;
+    }
     //course data
     new sql.Request()
         .input('Name', sql.NVarChar, req.body.Name)
