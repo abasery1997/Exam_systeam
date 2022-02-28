@@ -86,7 +86,6 @@ exports.GetNotCompletedExams = function (req, res, next) {
                             .input('examID', sql.Int, exam.Exam_ID)
                             .execute('getFullMarkExam')
                             .then(result => {
-                                console.log(result.recordset[0])
                                 exam = Object.assign(exam, result.recordset[0]);
                                 if (index == examsArr.length - 1)
                                     res.status(200).json({ message: "Exams data", data: examsArr });

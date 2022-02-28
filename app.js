@@ -8,7 +8,7 @@ const server = express();
 
 
 const config = require('./dbConfig')
-const {AuthRequired} = require('./middleware/auth/authRequired.middleware')
+const {AuthRequired ,adminAuthRequired,studentAuthRequired,notAuthRequired} = require('./middleware/auth/authRequired.middleware')
 
 //routes
 const authRouter = require('./routes/auth.router');
@@ -42,12 +42,12 @@ server.use('/home', router);
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(express.json());
-server.use('/login',authRouter);
+server.use('/login',notAuthRequired,authRouter);
 server.use('/courses',AuthRequired,courseRouter);
-server.use('/instructors',AuthRequired,instructorRouter);
-server.use('/students',AuthRequired,studentRouter);
-server.use('/questions',AuthRequired,questionsRouter);
-server.use('/departments',AuthRequired,deptRouter);
+server.use('/instructors',AuthRequired,adminAuthRequired,instructorRouter);
+server.use('/students',AuthRequired,adminAuthRequired,studentRouter);
+server.use('/questions',AuthRequired,adminAuthRequired,questionsRouter);
+server.use('/departments',AuthRequired,adminAuthRequired,deptRouter);
 server.use('/exam',AuthRequired,examRouter);
 
 
