@@ -15,9 +15,10 @@ const authRouter = require('./routes/auth.router');
 const router = require('./routes/router');
 const courseRouter = require('./routes/courses.router')
 const instructorRouter = require('./routes/instructorsRouter')
+const studentRouter = require('./routes/student.router')
 const questionsRouter = require('./routes/questions.router')
 const deptRouter = require('./routes/departmentRoute')
-const generateExamRouter = require('./routes/generateExamRouter')
+const examRouter = require('./routes/examRouter')
 
 // connect to database then listing to server
 sql.connect(config)
@@ -44,9 +45,10 @@ server.use(express.json());
 server.use('/login',authRouter);
 server.use('/courses',AuthRequired,courseRouter);
 server.use('/instructors',AuthRequired,instructorRouter);
+server.use('/students',AuthRequired,studentRouter);
 server.use('/questions',AuthRequired,questionsRouter);
 server.use('/departments',AuthRequired,deptRouter);
-server.use('/generateExam',AuthRequired,generateExamRouter);
+server.use('/exam',AuthRequired,examRouter);
 
 
 
