@@ -1,7 +1,16 @@
 const sql = require('mssql')
+const {validationResult}=require("express-validator");
 
 
 exports.generateExam = function (req, res, next) {
+    let errors=   validationResult(req);
+    if(!errors.isEmpty())
+    {
+           let error=new Error();
+           error.status=422;
+           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
+           throw error;
+    }
     new sql.Request()
         .input('courseId', sql.Int, req.body.crsId)
         .execute('getCourseStudent')
@@ -31,6 +40,14 @@ exports.generateExam = function (req, res, next) {
         })
 }
 exports.GetCompletedExams = function (req, res, next) {
+    let errors=   validationResult(req);
+    if(!errors.isEmpty())
+    {
+           let error=new Error();
+           error.status=422;
+           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
+           throw error;
+    }
     new sql.Request()
         .input('stdId', sql.Int, req.body.stdId)
         .execute('GetStdCompletedExams')
@@ -67,6 +84,14 @@ exports.GetCompletedExams = function (req, res, next) {
         })
 }
 exports.GetNotCompletedExams = function (req, res, next) {
+    let errors=   validationResult(req);
+    if(!errors.isEmpty())
+    {
+           let error=new Error();
+           error.status=422;
+           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
+           throw error;
+    }
     new sql.Request()
         .input('stdId', sql.Int, req.body.stdId)
         .execute('GetStdNotCompletedExams')

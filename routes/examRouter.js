@@ -1,15 +1,27 @@
 const express = require("express");
 const router = express.Router();
+const { body } = require("express-validator")
 
 const examController = require("../controllers/examController");
-const {adminAuthRequired} = require('../middleware/auth/authRequired.middleware')
+const { adminAuthRequired } = require('../middleware/auth/authRequired.middleware')
 
 //post
-router.post("/generate",adminAuthRequired, examController.generateExam);
+router.post("/generate", adminAuthRequired, [
+    body("crsId").isInt().withMessage("Course ID should be Integer"),
+    body("TFQNumber").isInt().withMessage("TFQNumber should be Integer"),
+    body("MCQNumber").isInt().withMessage("MCQNumber should be Integer"),
+    body("duration").isInt().withMessage("duration should be Integer")
+
+], examController.generateExam);
 
 //post
-router.post("/finishedstudentexams", examController.GetCompletedExams);
-router.post("/notfinishedstudentexams", examController.GetNotCompletedExams);
+router.post("/finishedstudentexams", [
+    body("stdId").isInt().withMessage("Student ID should be Integer")
+], examController.GetCompletedExams);
+
+router.post("/notfinishedstudentexams", [
+    body("stdId").isInt().withMessage("Student ID should be Integer")
+], examController.GetNotCompletedExams);
 
 
 
