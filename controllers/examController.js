@@ -39,6 +39,7 @@ exports.generateExam = function (req, res, next) {
             next(error);
         })
 }
+
 exports.GetCompletedExams = function (req, res, next) {
     let errors=   validationResult(req);
     if(!errors.isEmpty())
@@ -82,6 +83,7 @@ exports.GetCompletedExams = function (req, res, next) {
             next(error);
         })
 }
+
 exports.GetNotCompletedExams = function (req, res, next) {
     let errors=   validationResult(req);
     if(!errors.isEmpty())
@@ -124,4 +126,89 @@ exports.GetNotCompletedExams = function (req, res, next) {
             error.status = 500;
             next(error);
         })
+}
+
+exports.startExam = function (req, res, next) {
+    new sql.Request()
+        .input("examID", sql.Int, req.body.examId)
+        .execute("getExamDuration")
+        .then(result => {
+            let QuesArr = result.recordset;
+            QuesArr = Object.assign(QuesArr[0], {'questions': []});
+            // Questions
+            new sql.Request()
+                .input('examID', sql.Int, req.body.examId)
+                .execute('getExamQuestions')
+                .then(result2 => {
+                        result2.recordset.forEach( (question, index) => {
+                            QuesArr['questions'].push({"content":question['Body'], "choices": []});
+                            console.log(QuesArr)
+                            // choices
+                            new sql.Request()
+                                .input('questionID', sql.Int, question['Ques_ID'])
+                                .execute('getQuestionChoices')
+                                .then(result3 => {
+                                    result3.recordset.forEach( choice => {
+                                        QuesArr['questions'][index]["choices"].push({"ansId": choice['Ans_ID'], "content": choice['Body']});
+                                    })
+
+                                    if(index == QuesArr['questions'].length - 1)
+                                        res.status(200).json({ message:"Exam started successfully", data: QuesArr });
+                                })  
+                                .catch(error => {
+                                    error.status = 500;
+                                    next(error);
+                                })                            
+                        })
+                    })  
+                .catch(error => {
+                    error.status = 500;
+                    next(error);
+                })   
+        })
+        .catch(error => {
+            error.status = 500;
+            next(error);
+        }) 
+}
+
+exports.submitExam = function (req, res, next) {
+    new sql.Request()
+        .input("examId", sql.Int, req.body.examId)
+        .input("ansId1", sql.Int, req.body.answers[0]['0'])
+        .input("ansId2", sql.Int, req.body.answers[1]['1'])
+        .input("ansId3", sql.Int, req.body.answers[2]['2'])
+        .input("ansId4", sql.Int, req.body.answers[3]['3'])
+        .input("ansId5", sql.Int, req.body.answers[4]['4'])
+        .input("ansId6", sql.Int, req.body.answers[5]['5'])
+        .input("ansId7", sql.Int, req.body.answers[6]['6'])
+        .input("ansId8", sql.Int, req.body.answers[7]['7'])
+        .input("ansId9", sql.Int, req.body.answers[8]['8'])
+        .input("ansId10", sql.Int, req.body.answers[9]['9'])
+        .execute("examAnswers")
+        .then(result => {
+            new sql.Request()
+            .input("examId", sql.Int, req.body.examId)
+            .execute("examCorrection")
+            .then(result => {
+                new sql.Request()
+                .input("examId", sql.Int, req.body.examId)
+                .execute("getStudentDegree")
+                .then(result => {
+                    res.status(200).json({ message:"Exam submitted successfully", data: result.recordset });
+                })
+                .catch(error => {
+                    error.status = 500;
+                    next(error);
+                })
+            })
+            .catch(error => {
+                error.status = 500;
+                next(error);
+            })    
+        })
+        .catch(error => {
+            error.status = 500;
+            next(error);
+        })    
 }
