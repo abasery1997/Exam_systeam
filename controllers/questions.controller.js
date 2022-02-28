@@ -1,4 +1,5 @@
 const sql = require('mssql')
+const {validationResult}=require("express-validator");
 
 
 
@@ -38,6 +39,14 @@ exports.list = function (req, res, next) {
         })
 }
 exports.courseQuestions = function (req, res, next) {
+    let errors=   validationResult(req);
+    if(!errors.isEmpty())
+    {
+           let error=new Error();
+           error.status=422;
+           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
+           throw error;
+    }
     new sql.Request()
         .input('courseID', sql.Int, req.body.CrsId)
         .execute('getCourseQuestions')
@@ -75,6 +84,14 @@ exports.courseQuestions = function (req, res, next) {
 }
 
 exports.addQuestion = function (req, res, next) {
+    let errors=   validationResult(req);
+    if(!errors.isEmpty())
+    {
+           let error=new Error();
+           error.status=422;
+           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
+           throw error;
+    }
     new sql.Request()
         .input('body', sql.NVarChar(sql.MAX), req.body.body)
         .input('correctAnswer', sql.Int, null)
