@@ -130,14 +130,14 @@ exports.GetNotCompletedExams = function (req, res, next) {
 
 exports.startExam = function (req, res, next) {
     new sql.Request()
-        .input("examID", sql.Int, req.body.examId)
+        .input("examID", sql.Int, req.params.examId)
         .execute("getExamDuration")
         .then(result => {
             let QuesArr = result.recordset;
             QuesArr = Object.assign(QuesArr[0], {'questions': []});
             // Questions
             new sql.Request()
-                .input('examID', sql.Int, req.body.examId)
+                .input('examID', sql.Int, req.params.examId)
                 .execute('getExamQuestions')
                 .then(result2 => {
                         result2.recordset.forEach( (question, index) => {

@@ -5,6 +5,6 @@ const {getStudents}=require("../controllers/student.controller");
 
 
 //get
-router.get("", getStudents);
+router.get("/:stdId", getStudents);
 
 module.exports = router;

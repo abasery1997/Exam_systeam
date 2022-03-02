@@ -2,7 +2,7 @@ const sql = require('mssql');
 
 exports.getStudents = function (req, res, next) {
     new sql.Request()
-        .input("StdID", sql.Int, req.body.stdId)
+        .input("StdID", sql.Int, req.params.stdId)
         .execute('getStudentCourses')
         .then(result => {
             let crsArr = [];

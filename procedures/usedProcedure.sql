@@ -10,8 +10,8 @@ begin
 	exec insertExam @studentId, @courseId, @duration
 	-- get examId of last inserted exam
 	declare @examId int
-	SELECT TOP 1 @examId = Exam_ID FROM Exams ORDER BY Exam_ID DESC --
-	--OR-- SELECT @examId = max(Exam_ID) FROM Exams
+	select @examId = Exam_ID from Exams
+	where @courseId = Crs_ID and @studentId = Std_ID
 	-- select random questions
 	exec chooseQuesEachType @T_F, @examId, @courseId, 'tf'
 	exec chooseQuesEachType @MCQ, @examId, @courseId, 'm'

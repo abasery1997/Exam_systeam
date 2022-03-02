@@ -48,7 +48,7 @@ exports.courseQuestions = function (req, res, next) {
            throw error;
     }
     new sql.Request()
-        .input('courseID', sql.Int, req.body.CrsId)
+        .input('courseID', sql.Int, req.params.CrsId)
         .execute('getCourseQuestions')
         .then(result => {
             let questions = result.recordset;

@@ -6,7 +6,7 @@ const examController = require("../controllers/examController");
 const { adminAuthRequired } = require('../middleware/auth/authRequired.middleware')
 
 // start exam
-router.get('/startExam', examController.startExam);
+router.get('/startExam/:examId', examController.startExam);
 
 //post
 router.post("/generate", adminAuthRequired, [

@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const {body}=require("express-validator")
+const {body, query, param}=require("express-validator")
 
 const {list, courseQuestions, addQuestion} = require("../controllers/questions.controller");
 
 
 router.get('/list', list);
-router.get('/courseQuestions', [
-    body("CrsId").isInt().withMessage("Course ID should be Integer"),
+router.get('/courseQuestions/:CrsId', [
+    param("CrsId").isInt().withMessage("Course ID should be Integer"),
 ],courseQuestions);
 router.post('', [
     body("body").isString().withMessage("Question body should be string"),
