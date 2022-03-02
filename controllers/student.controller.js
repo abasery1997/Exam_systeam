@@ -1,24 +1,16 @@
 const sql = require('mssql');
 
 exports.getStudents = function (req, res, next) {
-    new sql.Request().execute('getStudents')
+    new sql.Request()
+        .input("StdID", sql.Int, req.body.stdId)
+        .execute('getStudentCourses')
         .then(result => {
-            let stdCrsArr = result.recordset;
-            stdCrsArr.forEach((student, index) => {
-                // add courses for each student
-                student = Object.assign(student, { 'courses': [] });
-                new sql.Request()
-                    .input('StdID', sql.Int, student['Id'])
-                    .execute('getStudentCourses')
-                    .then(result => {
-                        result.recordset.forEach(course => {
-                            student['courses'].push(course['Crs_Name']);
-                        })
-                        // response
-                        if (index == stdCrsArr.length - 1)
-                            res.status(200).json({ message: "Students data", data: stdCrsArr });
-                    })
+            let crsArr = [];
+            result.recordset.forEach(course => {
+                crsArr.push(course['Crs_Name']);
             })
+
+            res.status(200).json({ message: "Students data", data: crsArr });
         })
         .catch(error => {
             error.status = 500;

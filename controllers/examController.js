@@ -12,11 +12,11 @@ exports.generateExam = function (req, res, next) {
            throw error;
     }
     new sql.Request()
-        .input('courseId', sql.Int, req.body.crsId)
+        .input('courseID', sql.Int, req.body.crsId)
         .execute('getCourseStudent')
         .then(result => {
             result.recordset.forEach((student, index) => {
-                let noStudents = result.recordset.length - 1;
+                let noStudents = result.recordset.length;
                 new sql.Request()
                     .input('courseId', sql.Int, req.body.crsId)
                     .input('studentId', sql.Int, student['Std_ID'])
@@ -142,7 +142,6 @@ exports.startExam = function (req, res, next) {
                 .then(result2 => {
                         result2.recordset.forEach( (question, index) => {
                             QuesArr['questions'].push({"content":question['Body'], "choices": []});
-                            console.log(QuesArr)
                             // choices
                             new sql.Request()
                                 .input('questionID', sql.Int, question['Ques_ID'])

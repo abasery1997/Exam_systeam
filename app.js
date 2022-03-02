@@ -45,7 +45,7 @@ server.use(express.json());
 server.use('/login',notAuthRequired,authRouter);
 server.use('/courses',AuthRequired,courseRouter);
 server.use('/instructors',AuthRequired,adminAuthRequired,instructorRouter);
-server.use('/students',AuthRequired,adminAuthRequired,studentRouter);
+server.use('/students',AuthRequired,studentRouter);
 server.use('/questions',AuthRequired,adminAuthRequired,questionsRouter);
 server.use('/departments',AuthRequired,adminAuthRequired,deptRouter);
 server.use('/exam',AuthRequired,examRouter);
