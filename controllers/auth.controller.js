@@ -22,13 +22,13 @@ exports.login = function (req, res, next) {
         .input('type', sql.NVarChar, type)
         .execute('isAUser')
         .then(result => {
-            console.log(result.recordset[0][''])
             const user = { name: username ,type:type};
-            if (result.recordset[0][''] == 'true') {
-                const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-                res.status(200).json({ accessToken });
-            } else {
+            if (result.recordset[0][''] == 'false') {
                 res.status(403).json({ message: "user data not correct" });
+            } else {
+                let id = result.recordset[0].ID;
+                const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+                res.status(200).json({ accessToken,id });
             }
 
         })
