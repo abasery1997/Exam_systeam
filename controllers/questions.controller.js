@@ -94,7 +94,7 @@ exports.addQuestion = function (req, res, next) {
     }
     new sql.Request()
         .input('body', sql.NVarChar(sql.MAX), req.body.body)
-        .input('correctAnswer', sql.Int, null)
+        .input('correctAnswer', sql.NVarChar(sql.MAX), null)
         .input('type', sql.NChar(10), req.body.type)
         .input('degree', sql.Int, req.body.degree)
         .input('courseId', sql.Int, req.body.CrsId)
