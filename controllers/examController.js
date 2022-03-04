@@ -64,7 +64,7 @@ exports.GetCompletedExams = function (req, res, next) {
         throw error;
     }
     new sql.Request()
-        .input('stdId', sql.Int, req.body.stdId)
+        .input('stdId', sql.Int, req.params.stdId)
         .execute('GetStdCompletedExams')
         .then(result => {
             if (result.recordset[0].res == 'false') {
@@ -114,7 +114,7 @@ exports.GetNotCompletedExams = function (req, res, next) {
         throw error;
     }
     new sql.Request()
-        .input('stdId', sql.Int, req.body.stdId)
+        .input('stdId', sql.Int, req.params.stdId)
         .execute('GetStdNotCompletedExams')
         .then(result => {
             if (result.recordset[0].res == 'false') {
@@ -200,16 +200,16 @@ exports.startExam = function (req, res, next) {
 exports.submitExam = function (req, res, next) {
     new sql.Request()
         .input("examId", sql.Int, req.body.examId)
-        .input("ansId1", sql.Int, req.body.answers[0]['0'])
-        .input("ansId2", sql.Int, req.body.answers[1]['1'])
-        .input("ansId3", sql.Int, req.body.answers[2]['2'])
-        .input("ansId4", sql.Int, req.body.answers[3]['3'])
-        .input("ansId5", sql.Int, req.body.answers[4]['4'])
-        .input("ansId6", sql.Int, req.body.answers[5]['5'])
-        .input("ansId7", sql.Int, req.body.answers[6]['6'])
-        .input("ansId8", sql.Int, req.body.answers[7]['7'])
-        .input("ansId9", sql.Int, req.body.answers[8]['8'])
-        .input("ansId10", sql.Int, req.body.answers[9]['9'])
+        .input("ansId1", sql.Int, req.body.answers[0]["0"])
+        .input("ansId2", sql.Int, req.body.answers[1]["1"])
+        .input("ansId3", sql.Int, req.body.answers[2]["2"])
+        .input("ansId4", sql.Int, req.body.answers[3]["3"])
+        .input("ansId5", sql.Int, req.body.answers[4]["4"])
+        .input("ansId6", sql.Int, req.body.answers[5]["5"])
+        .input("ansId7", sql.Int, req.body.answers[6]["6"])
+        .input("ansId8", sql.Int, req.body.answers[7]["7"])
+        .input("ansId9", sql.Int, req.body.answers[8]["8"])
+        .input("ansId10", sql.Int, req.body.answers[9]["9"])
         .execute("examAnswers")
         .then(result => {
             new sql.Request()

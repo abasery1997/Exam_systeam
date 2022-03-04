@@ -241,8 +241,9 @@ as
 begin
 	declare @studentDegree int
 	select @studentDegree = sum(Degree) from Questions Q, Exams_Questions EQ
-	where Correct_Answer = Ans_ID and Q.Ques_ID = EQ.Ques_ID and Exam_ID = @examId
-
+	where Correct_Answer = Ans_ID and Q.Ques_ID = EQ.Ques_ID and Exam_ID = 66
+	
+	if @studentDegree is null set @studentDegree = 0
 	exec setTotalMark @studentDegree, @examId
 end
 

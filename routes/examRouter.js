@@ -17,14 +17,10 @@ router.post("/generate", adminAuthRequired, [
 
 ], examController.generateExam);
 
-//post
-router.post("/finishedstudentexams", [
-    body("stdId").isInt().withMessage("Student ID should be Integer")
-], examController.GetCompletedExams);
+//get
+router.get("/finishedstudentexams/:stdId", examController.GetCompletedExams);
 
-router.post("/notfinishedstudentexams", [
-    body("stdId").isInt().withMessage("Student ID should be Integer")
-], examController.GetNotCompletedExams);
+router.get("/notfinishedstudentexams/:stdId", examController.GetNotCompletedExams);
 
 //end exam and send student's answers
 router.post('/submitExam', [
