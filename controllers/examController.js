@@ -52,7 +52,7 @@ exports.GetCompletedExams = function (req, res, next) {
         .execute('GetStdCompletedExams')
         .then(result => {
             if (result.recordset[0].res == 'false') {
-                res.status(404).json({ message: "No Exams" });
+                res.status(204).json({ message:"no Exams",data:[] });
             }
             else {
 
@@ -102,7 +102,7 @@ exports.GetNotCompletedExams = function (req, res, next) {
         .execute('GetStdNotCompletedExams')
         .then(result => {
             if (result.recordset[0].res == 'false') {
-                res.status(404).json({ message: "No Exams" });
+                res.status(204).json({ message: "No Exams" ,data:[]});
             } else {
 
 

@@ -1,5 +1,5 @@
 const sql = require('mssql')
-const {validationResult}=require("express-validator");
+const { validationResult } = require("express-validator");
 
 
 
@@ -26,7 +26,7 @@ exports.list = function (req, res, next) {
                                     Quest.Choices.push(Choice.Body);
                                 })
                                 if (index == questions.length - 1)
-                                    res.status(200).json({ message: "Questions data",data: questions });
+                                    res.status(200).json({ message: "Questions data", data: questions });
                             })
 
                     })
@@ -39,43 +39,46 @@ exports.list = function (req, res, next) {
         })
 }
 exports.courseQuestions = function (req, res, next) {
-    let errors=   validationResult(req);
-    if(!errors.isEmpty())
-    {
-           let error=new Error();
-           error.status=422;
-           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
-           throw error;
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let error = new Error();
+        error.status = 422;
+        error.message = errors.array().reduce((current, object) => current + object.msg + " ", "")
+        throw error;
     }
     new sql.Request()
         .input('courseID', sql.Int, req.params.CrsId)
         .execute('getCourseQuestions')
         .then(result => {
-            let questions = result.recordset;
-            questions.forEach((Quest, index) => {
+            if (result.recordset[0].res == 'false') {
+                res.status(204).json({ message: "no questions", data: [] });
+            }
+            else {
+                let questions = result.recordset;
+                questions.forEach((Quest, index) => {
 
-                new sql.Request()
-                    .input('ansId', sql.Int, Quest.Correct_Answer)
-                    .execute('GetCorrectAnswer')
-                    .then(result => {
-                        choise = result.recordset[0].Body;
-                        Quest.Correct_Answer = choise
+                    new sql.Request()
+                        .input('ansId', sql.Int, Quest.Correct_Answer)
+                        .execute('GetCorrectAnswer')
+                        .then(result => {
+                            choise = result.recordset[0].Body;
+                            Quest.Correct_Answer = choise
 
-                        Quest = Object.assign(Quest, { 'Choices': [] });
-                        new sql.Request()
-                            .input('questionID', sql.Int, Quest.Ques_ID)
-                            .execute('getQuestionChoices')
-                            .then(result => {
-                                result.recordset.forEach(Choice => {
-                                    Quest.Choices.push(Choice.Body);
+                            Quest = Object.assign(Quest, { 'Choices': [] });
+                            new sql.Request()
+                                .input('questionID', sql.Int, Quest.Ques_ID)
+                                .execute('getQuestionChoices')
+                                .then(result => {
+                                    result.recordset.forEach(Choice => {
+                                        Quest.Choices.push(Choice.Body);
+                                    })
+                                    if (index == questions.length - 1)
+                                        res.status(200).json({ message: "Questions data", data: questions });
                                 })
-                                if (index == questions.length - 1)
-                                    res.status(200).json({ message: "Questions data", data: questions});
-                            })
 
-                    })
-            })
-
+                        })
+                })
+            }
         })
         .catch(error => {
             error.status = 500;
@@ -84,13 +87,12 @@ exports.courseQuestions = function (req, res, next) {
 }
 
 exports.addQuestion = function (req, res, next) {
-    let errors=   validationResult(req);
-    if(!errors.isEmpty())
-    {
-           let error=new Error();
-           error.status=422;
-           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
-           throw error;
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let error = new Error();
+        error.status = 422;
+        error.message = errors.array().reduce((current, object) => current + object.msg + " ", "")
+        throw error;
     }
     new sql.Request()
         .input('body', sql.NVarChar(sql.MAX), req.body.body)
@@ -100,8 +102,7 @@ exports.addQuestion = function (req, res, next) {
         .input('courseId', sql.Int, req.body.CrsId)
         .execute('InsertQuestion')
         .then(result => {
-            if(req.body.type == 'tf')
-            {
+            if (req.body.type == 'tf') {
                 new sql.Request()
                     .execute('addTFChoices')
                     .then(result => {
@@ -109,20 +110,19 @@ exports.addQuestion = function (req, res, next) {
                             .input('correctAnswer', sql.NVarChar(sql.MAX), req.body.correctAnswer)
                             .execute('setCorrectAnswerId')
                             .then(result => {
-                                    res.status(200).json({ message:"Question added successfully" });
-                                })  
+                                res.status(200).json({ message: "Question added successfully" });
+                            })
                             .catch(error => {
                                 error.status = 500;
                                 next(error);
-                            })   
+                            })
                     })
                     .catch(error => {
                         error.status = 500;
                         next(error);
-                    }) 
+                    })
             }
-            else
-            {
+            else {
                 let choices = req.body.choices;
                 new sql.Request()
                     .input('ansBody1', sql.NVarChar(sql.MAX), choices[0])
@@ -134,21 +134,21 @@ exports.addQuestion = function (req, res, next) {
                             .input('correctAnswer', sql.NVarChar(sql.MAX), req.body.correctAnswer)
                             .execute('setCorrectAnswerId')
                             .then(result => {
-                                    res.status(200).json({ message:"Question added successfully" });
-                                })
+                                res.status(200).json({ message: "Question added successfully" });
+                            })
                             .catch(error => {
                                 error.status = 500;
                                 next(error);
-                            }) 
+                            })
                     })
                     .catch(error => {
                         error.status = 500;
                         next(error);
-                    }) 
+                    })
             }
         })
         .catch(error => {
             error.status = 500;
             next(error);
-        }) 
+        })
 }
