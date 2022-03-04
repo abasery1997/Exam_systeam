@@ -1,15 +1,14 @@
 const sql = require('mssql')
-const {validationResult}=require("express-validator");
+const { validationResult } = require("express-validator");
 
 
 exports.generateExam = function (req, res, next) {
-    let errors=   validationResult(req);
-    if(!errors.isEmpty())
-    {
-           let error=new Error();
-           error.status=422;
-           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
-           throw error;
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let error = new Error();
+        error.status = 422;
+        error.message = errors.array().reduce((current, object) => current + object.msg + " ", "")
+        throw error;
     }
     new sql.Request()
         .input('courseID', sql.Int, req.body.crsId)
@@ -41,42 +40,48 @@ exports.generateExam = function (req, res, next) {
 }
 
 exports.GetCompletedExams = function (req, res, next) {
-    let errors=   validationResult(req);
-    if(!errors.isEmpty())
-    {
-           let error=new Error();
-           error.status=422;
-           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
-           throw error;
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let error = new Error();
+        error.status = 422;
+        error.message = errors.array().reduce((current, object) => current + object.msg + " ", "")
+        throw error;
     }
     new sql.Request()
         .input('stdId', sql.Int, req.body.stdId)
         .execute('GetStdCompletedExams')
         .then(result => {
-            let examsArr = result.recordset;
-            examsArr.forEach((exam, index) => {
-                exam = Object.assign(exam, { 'topics': [] });
-                new sql.Request()
-                    .input('courseID', sql.Int, exam.Crs_ID)
-                    .execute('getTopicsInfo')
-                    .then(result => {
-                        result.recordset.forEach(topic => {
-                            exam.topics.push(topic.Top_Name);
+            if (result.recordset[0].res == 'false') {
+                res.status(404).json({ message: "No Exams" });
+            }
+            else {
+
+
+                let examsArr = result.recordset;
+                examsArr.forEach((exam, index) => {
+                    exam = Object.assign(exam, { 'topics': [] });
+                    new sql.Request()
+                        .input('courseID', sql.Int, exam.Crs_ID)
+                        .execute('getTopicsInfo')
+                        .then(result => {
+                            result.recordset.forEach(topic => {
+                                exam.topics.push(topic.Top_Name);
+                            })
+
+                            new sql.Request()
+                                .input('examID', sql.Int, exam.Exam_ID)
+                                .execute('getFullMarkExam')
+                                .then(result => {
+                                    exam = Object.assign(exam, result.recordset[0]);
+                                    if (index == examsArr.length - 1)
+                                        res.status(200).json({ message: "Exams data", data: examsArr });
+                                })
+                            // response
+
                         })
 
-                        new sql.Request()
-                            .input('examID', sql.Int, exam.Exam_ID)
-                            .execute('getFullMarkExam')
-                            .then(result => {
-                                exam = Object.assign(exam, result.recordset[0]);
-                                if (index == examsArr.length - 1)
-                                    res.status(200).json({ message: "Exams data", data: examsArr });
-                            })
-                        // response
-
-                    })
-
-            })
+                })
+            }
         })
         .catch(error => {
             error.status = 500;
@@ -85,42 +90,47 @@ exports.GetCompletedExams = function (req, res, next) {
 }
 
 exports.GetNotCompletedExams = function (req, res, next) {
-    let errors=   validationResult(req);
-    if(!errors.isEmpty())
-    {
-           let error=new Error();
-           error.status=422;
-           error.message=errors.array().reduce((current,object)=>current+object.msg+" ","")
-           throw error;
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        let error = new Error();
+        error.status = 422;
+        error.message = errors.array().reduce((current, object) => current + object.msg + " ", "")
+        throw error;
     }
     new sql.Request()
         .input('stdId', sql.Int, req.body.stdId)
         .execute('GetStdNotCompletedExams')
         .then(result => {
-            let examsArr = result.recordset;
-            examsArr.forEach((exam, index) => {
-                exam = Object.assign(exam, { 'topics': [] });
-                new sql.Request()
-                    .input('courseID', sql.Int, exam.Crs_ID)
-                    .execute('getTopicsInfo')
-                    .then(result => {
-                        result.recordset.forEach(topic => {
-                            exam.topics.push(topic.Top_Name);
+            if (result.recordset[0].res == 'false') {
+                res.status(404).json({ message: "No Exams" });
+            } else {
+
+
+                let examsArr = result.recordset;
+                examsArr.forEach((exam, index) => {
+                    exam = Object.assign(exam, { 'topics': [] });
+                    new sql.Request()
+                        .input('courseID', sql.Int, exam.Crs_ID)
+                        .execute('getTopicsInfo')
+                        .then(result => {
+                            result.recordset.forEach(topic => {
+                                exam.topics.push(topic.Top_Name);
+                            })
+
+                            new sql.Request()
+                                .input('examID', sql.Int, exam.Exam_ID)
+                                .execute('getFullMarkExam')
+                                .then(result => {
+                                    exam = Object.assign(exam, result.recordset[0]);
+                                    if (index == examsArr.length - 1)
+                                        res.status(200).json({ message: "Exams data", data: examsArr });
+                                })
+                            // response
+
                         })
 
-                        new sql.Request()
-                            .input('examID', sql.Int, exam.Exam_ID)
-                            .execute('getFullMarkExam')
-                            .then(result => {
-                                exam = Object.assign(exam, result.recordset[0]);
-                                if (index == examsArr.length - 1)
-                                    res.status(200).json({ message: "Exams data", data: examsArr });
-                            })
-                        // response
-
-                    })
-
-            })
+                })
+            }
         })
         .catch(error => {
             error.status = 500;
@@ -134,41 +144,41 @@ exports.startExam = function (req, res, next) {
         .execute("getExamDuration")
         .then(result => {
             let QuesArr = result.recordset;
-            QuesArr = Object.assign(QuesArr[0], {'questions': []});
+            QuesArr = Object.assign(QuesArr[0], { 'questions': [] });
             // Questions
             new sql.Request()
                 .input('examID', sql.Int, req.params.examId)
                 .execute('getExamQuestions')
                 .then(result2 => {
-                        result2.recordset.forEach( (question, index) => {
-                            QuesArr['questions'].push({"content":question['Body'], "choices": []});
-                            // choices
-                            new sql.Request()
-                                .input('questionID', sql.Int, question['Ques_ID'])
-                                .execute('getQuestionChoices')
-                                .then(result3 => {
-                                    result3.recordset.forEach( choice => {
-                                        QuesArr['questions'][index]["choices"].push({"ansId": choice['Ans_ID'], "content": choice['Body']});
-                                    })
+                    result2.recordset.forEach((question, index) => {
+                        QuesArr['questions'].push({ "content": question['Body'], "choices": [] });
+                        // choices
+                        new sql.Request()
+                            .input('questionID', sql.Int, question['Ques_ID'])
+                            .execute('getQuestionChoices')
+                            .then(result3 => {
+                                result3.recordset.forEach(choice => {
+                                    QuesArr['questions'][index]["choices"].push({ "ansId": choice['Ans_ID'], "content": choice['Body'] });
+                                })
 
-                                    if(index == QuesArr['questions'].length - 1)
-                                        res.status(200).json({ message:"Exam started successfully", data: QuesArr });
-                                })  
-                                .catch(error => {
-                                    error.status = 500;
-                                    next(error);
-                                })                            
-                        })
-                    })  
+                                if (index == QuesArr['questions'].length - 1)
+                                    res.status(200).json({ message: "Exam started successfully", data: QuesArr });
+                            })
+                            .catch(error => {
+                                error.status = 500;
+                                next(error);
+                            })
+                    })
+                })
                 .catch(error => {
                     error.status = 500;
                     next(error);
-                })   
+                })
         })
         .catch(error => {
             error.status = 500;
             next(error);
-        }) 
+        })
 }
 
 exports.submitExam = function (req, res, next) {
@@ -187,27 +197,27 @@ exports.submitExam = function (req, res, next) {
         .execute("examAnswers")
         .then(result => {
             new sql.Request()
-            .input("examId", sql.Int, req.body.examId)
-            .execute("examCorrection")
-            .then(result => {
-                new sql.Request()
                 .input("examId", sql.Int, req.body.examId)
-                .execute("getStudentDegree")
+                .execute("examCorrection")
                 .then(result => {
-                    res.status(200).json({ message:"Exam submitted successfully", data: result.recordset });
+                    new sql.Request()
+                        .input("examId", sql.Int, req.body.examId)
+                        .execute("getStudentDegree")
+                        .then(result => {
+                            res.status(200).json({ message: "Exam submitted successfully", data: result.recordset });
+                        })
+                        .catch(error => {
+                            error.status = 500;
+                            next(error);
+                        })
                 })
                 .catch(error => {
                     error.status = 500;
                     next(error);
                 })
-            })
-            .catch(error => {
-                error.status = 500;
-                next(error);
-            })    
         })
         .catch(error => {
             error.status = 500;
             next(error);
-        })    
+        })
 }

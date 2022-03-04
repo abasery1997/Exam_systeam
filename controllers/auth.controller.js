@@ -23,7 +23,7 @@ exports.login = function (req, res, next) {
         .execute('isAUser')
         .then(result => {
             const user = { name: username ,type:type};
-            if (result.recordset[0][''] == 'false') {
+            if (result.recordset[0].ID == 'false') {
                 res.status(403).json({ message: "user data not correct" });
             } else {
                 let id = result.recordset[0].ID;
