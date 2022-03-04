@@ -1,4 +1,5 @@
 require('dotenv').config()
+const cors=require("cors");
 const express = require('express');
 const bodyParser = require('body-parser');
 const sql = require('mssql')
@@ -9,6 +10,12 @@ const server = express();
 
 const config = require('./dbConfig')
 const {AuthRequired ,adminAuthRequired,studentAuthRequired,notAuthRequired} = require('./middleware/auth/authRequired.middleware')
+const corsOptions ={
+  origin:'*', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200,
+}
+
 
 //routes
 const authRouter = require('./routes/auth.router');
@@ -39,6 +46,7 @@ sql.connect(config)
 server.use('/home', router);
 
 // parse application/json
+server.use(cors(corsOptions))
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(express.json());
