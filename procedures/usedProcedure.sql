@@ -119,8 +119,13 @@ end
 create Procedure getCourseStudent @courseID int
 as
 begin
-	select S.Std_ID from Students S, Student_Courses SC
-	where S.Std_ID = SC.Std_ID and Crs_ID = @courseID
+	if exists (select S.Std_ID from Students S, Student_Courses SC where S.Std_ID = SC.Std_ID and Crs_ID = @courseID)
+		select S.Std_ID from Students S, Student_Courses SC
+		where S.Std_ID = SC.Std_ID and Crs_ID = @courseID
+	else
+	begin
+		select 'false' as res
+	end
 end
 
 --12 get all instructors >>
@@ -326,3 +331,12 @@ begin
 	where E.Ques_ID = EQ.Ques_ID and Exam_ID = @examID
 end
 
+create procedure validExam
+		@courseId int
+as
+begin
+	if exists (select Crs_ID from Exams where Crs_ID = @courseId)
+		select 'false' as res
+	else 
+		select 'true' as res
+end
