@@ -62,14 +62,14 @@ begin
 end
 
 --5 check in login
-create Procedure isAUser
+ALTER Procedure [dbo].[isAUser]
 		@userName varchar(50)=Null,
 		@password varchar(50)=Null,
 		@type nchar(1)=Null
 as
 begin
 	if exists (select userName from Users where userName = @userName and Password =@password and Type =@type)
-		select 'true'
+		select Users.ID from Users where userName = @userName and Password =@password and Type =@type 
 	else
 		select 'false'
 end
