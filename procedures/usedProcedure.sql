@@ -325,3 +325,4 @@ begin
 	select E.Ques_ID, Body from Questions E, Exams_Questions EQ
 	where E.Ques_ID = EQ.Ques_ID and Exam_ID = @examID
 end
+
